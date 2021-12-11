@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "926252720098",
+    "project_id": "mmessage-48c92",
+    "storage_bucket": "mmessage-48c92.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:926252720098:android:85d2a477bae13e637163bb",
+        "android_client_info": {
+          "package_name": "com.example.message_basic"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "926252720098-0ok4qtkgq4fc1s1ts5nrdd3en186kkdi.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCBUiBhM0N89FCNfn9aE6jzNIgv-rzGG6E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "926252720098-0ok4qtkgq4fc1s1ts5nrdd3en186kkdi.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
