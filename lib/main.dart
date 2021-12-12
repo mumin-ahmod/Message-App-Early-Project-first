@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -7,11 +8,8 @@ import 'data/message.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  Firebase.initializeApp();
+  await Firebase.initializeApp();
   runApp(FriendlyChatApp());
-
-
-
 }
 
 String _name = "Your Name";
@@ -23,7 +21,7 @@ class FriendlyChatApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: "Murads Message",
       home: ChatScreen(),
@@ -32,13 +30,17 @@ class FriendlyChatApp extends StatelessWidget {
 }
 
 class ChatMessage extends StatelessWidget {
-  final String text;
+  DocumentSnapshot snapshot;
 
-  ChatMessage({required this.text});
+  ChatMessage({required this.snapshot});
 
   @override
   Widget build(BuildContext context) {
     double c_width = MediaQuery.of(context).size.width * 0.8;
+
+    final message = Message.fromSnapshot(snapshot);
+
+    final text = message.text;
 
     return Container(
       width: c_width,
@@ -60,8 +62,11 @@ class ChatMessage extends StatelessWidget {
                   style: TextStyle(fontSize: 20, color: Colors.green[900]),
                 ),
                 Container(
-                  margin: EdgeInsets.only(top: 5.0),
-                  child: Expanded(child: (Text(text))),
+
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: (Text(text)),
+                  ),
                 )
               ],
             ),
@@ -73,6 +78,7 @@ class ChatMessage extends StatelessWidget {
 }
 
 class ChatScreen extends StatelessWidget {
+
   List _messages = <ChatMessage>[].obs;
 
   final _textController = TextEditingController();
@@ -85,28 +91,27 @@ class ChatScreen extends StatelessWidget {
     if (_canSendMessage()) {
       final message = Message(
         text: _textController.text,
-        date: DateTime.now(),
+        date: DateTime.now().toString(),
         // email: email,
       );
       MessageDao.saveMessage(message);
 
       _textController.clear();
-
-
     }
   }
-
-  void _handleSubmitted(String text) {
-    _textController.clear();
-
-    ChatMessage message = ChatMessage(text: text);
-
-    _messages.insert(0, message);
-
-    _focusNode.requestFocus();
-  }
+  //
+  // void _handleSubmitted(String text) {
+  //   _textController.clear();
+  //
+  //   ChatMessage message = ChatMessage(text: text);
+  //
+  //   _messages.insert(0, message);
+  //
+  //   _focusNode.requestFocus();
+  // }
 
   Widget _buildTextComposer() {
+
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 10.0),
       child: Row(
@@ -115,8 +120,8 @@ class ChatScreen extends StatelessWidget {
             child: TextField(
               controller:
                   _textController, // What is the function/work of this Controller?
-              onSubmitted:
-                  _handleSubmitted, // Q's = Why we didn't give the Perameters?
+              // onSubmitted:
+              //     _handleSubmitted, // Q's = Why we didn't give the Perameters?
               //and why no String passsed?
 
               decoration:
@@ -130,7 +135,7 @@ class ChatScreen extends StatelessWidget {
               child: IconButton(
             onPressed: () => _sendMessage(),
 
-                //Why we did .text not just the variable name?
+            //Why we did .text not just the variable name?
             // How it "passes the contents of message?
 
             icon: Icon(Icons.send_outlined), color: Colors.green,
@@ -151,14 +156,30 @@ class ChatScreen extends StatelessWidget {
       body: Column(
         children: [
           Flexible(
-            child: Obx(
-              () => ListView.builder(
-                itemBuilder: (_, int index) => _messages[index],
-                itemCount: _messages.length,
-                reverse: true,
-                padding: EdgeInsets.all(8.0),
-              ),
-            ),
+            child: StreamBuilder<QuerySnapshot>(
+
+                stream: MessageDao.getMessageStream(),
+
+                builder: (context, snapshot) {
+
+
+                  var _listOfSnapshot = snapshot.data?.docs ?? []; // WHAT WE DID HERE???
+
+                  // final message = Message.fromSnapshot(mySnapshot);
+
+                  _messages = _listOfSnapshot.map((data) => ChatMessage(snapshot: data)).toList();
+
+                  if (snapshot.hasData)
+                    return ListView.builder(
+                        itemBuilder: (_, int index) => _messages[index],
+                        itemCount: _messages.length,
+                        reverse: true,
+                        padding: EdgeInsets.all(8.0),
+
+                    );
+                  else
+                    return const Center(child: LinearProgressIndicator());
+                }),
           ),
           Divider(
             height: 1.0,

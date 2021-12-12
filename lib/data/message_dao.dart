@@ -12,7 +12,7 @@ class MessageDao{
 
   // getMessage stream
 
-  Stream<QuerySnapshot> getMessageStream(){
+  static Stream<QuerySnapshot> getMessageStream(){
     return messageCollection.snapshots();
   }
 

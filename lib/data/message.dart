@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Message {
   late String text;
-  final DateTime date;
+  final String date;
   final String? email;
 
   DocumentReference? reference;
@@ -17,7 +17,7 @@ class Message {
 
     var map = {
       "text" : text,
-      "date" : date.toString(),
+      "date" : date,
       "email" : email
     };
 
