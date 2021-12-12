@@ -5,6 +5,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:message_basic/data/message_dao.dart';
 
 import 'data/message.dart';
+import 'data/user_dao.dart';
+import 'login_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,6 +26,9 @@ class FriendlyChatApp extends StatelessWidget {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: "Murads Message",
+
+      // call ChatScreen()
+
       home: ChatScreen(),
     );
   }
@@ -62,7 +67,6 @@ class ChatMessage extends StatelessWidget {
                   style: TextStyle(fontSize: 20, color: Colors.green[900]),
                 ),
                 Container(
-
                   child: Padding(
                     padding: const EdgeInsets.only(top: 8.0),
                     child: (Text(text)),
@@ -78,6 +82,7 @@ class ChatMessage extends StatelessWidget {
 }
 
 class ChatScreen extends StatelessWidget {
+  UserDao userDao = Get.put(UserDao());
 
   List _messages = <ChatMessage>[].obs;
 
@@ -111,7 +116,6 @@ class ChatScreen extends StatelessWidget {
   // }
 
   Widget _buildTextComposer() {
-
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 10.0),
       child: Row(
@@ -151,47 +155,53 @@ class ChatScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text("Murad's Message"),
         centerTitle: true,
-        backgroundColor: Colors.green,
-      ),
-      body: Column(
-        children: [
-          Flexible(
-            child: StreamBuilder<QuerySnapshot>(
+        backgroundColor: Colors.purple,
 
-                stream: MessageDao.getMessageStream(),
-
-                builder: (context, snapshot) {
-
-
-                  var _listOfSnapshot = snapshot.data?.docs ?? []; // WHAT WE DID HERE???
-
-                  // final message = Message.fromSnapshot(mySnapshot);
-
-                  _messages = _listOfSnapshot.map((data) => ChatMessage(snapshot: data)).toList();
-
-                  if (snapshot.hasData)
-                    return ListView.builder(
-                        itemBuilder: (_, int index) => _messages[index],
-                        itemCount: _messages.length,
-                        reverse: true,
-                        padding: EdgeInsets.all(8.0),
-
-                    );
-                  else
-                    return const Center(child: LinearProgressIndicator());
-                }),
-          ),
-          Divider(
-            height: 1.0,
-          ),
-          Container(
-            decoration: BoxDecoration(
-              color: Theme.of(context).cardColor,
-            ),
-            child: _buildTextComposer(),
-          )
+        actions: [
+          IconButton(onPressed: (){
+            userDao.logout();
+          }, icon: Icon(Icons.logout)),
         ],
       ),
+      body: userDao.isLoggedIn()
+          ? Column(
+              children: [
+                Flexible(
+                  child: StreamBuilder<QuerySnapshot>(
+                      stream: MessageDao.getMessageStream(),
+                      builder: (context, snapshot) {
+                        var _listOfSnapshot =
+                            snapshot.data?.docs ?? []; // WHAT WE DID HERE???
+
+                        // final message = Message.fromSnapshot(mySnapshot);
+
+                        _messages = _listOfSnapshot
+                            .map((data) => ChatMessage(snapshot: data))
+                            .toList();
+
+                        if (snapshot.hasData)
+                          return ListView.builder(
+                            itemBuilder: (_, int index) => _messages[index],
+                            itemCount: _messages.length,
+                            reverse: true,
+                            padding: EdgeInsets.all(8.0),
+                          );
+                        else
+                          return const Center(child: LinearProgressIndicator());
+                      }),
+                ),
+                Divider(
+                  height: 1.0,
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).cardColor,
+                  ),
+                  child: _buildTextComposer(),
+                )
+              ],
+            )
+          : Login(),
     );
   }
 }
