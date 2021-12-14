@@ -1,6 +1,8 @@
 # message_basic
 
-A new Flutter project.
+My first Flutter Messaging app \n
+Made with Flutter, Firebase Cloud Firestore database,
+Stream and Getx
 
 ## Getting Started
 
