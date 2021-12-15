@@ -11,7 +11,9 @@ import 'login_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   await Firebase.initializeApp();
+  InstanceBinding().dependencies();
   runApp(FriendlyChatApp());
 }
 
@@ -26,7 +28,7 @@ class FriendlyChatApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
 
-      initialBinding: InstanceBinding(),
+      // initialBinding: InstanceBinding(),
 
       debugShowCheckedModeBanner: false,
       title: "Murad's Message",

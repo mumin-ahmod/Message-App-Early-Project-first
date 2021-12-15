@@ -6,6 +6,7 @@ import 'package:message_basic/login_screen.dart';
 class UserDao extends GetxController{
 
 
+
   final auth = FirebaseAuth.instance;
  //
  //  // add healper methods
