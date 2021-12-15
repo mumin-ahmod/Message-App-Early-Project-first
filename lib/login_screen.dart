@@ -10,7 +10,7 @@ class Login extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    UserDao userDao = Get.put(UserDao());
+    UserDao userDao = Get.find();
     return Scaffold(
 
       body: SafeArea(

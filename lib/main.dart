@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:message_basic/data/instance_binding.dart';
 import 'package:message_basic/data/message_dao.dart';
 
 import 'data/message.dart';
@@ -25,8 +26,10 @@ class FriendlyChatApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
 
+      initialBinding: InstanceBinding(),
+
       debugShowCheckedModeBanner: false,
-      title: "Murads Message",
+      title: "Murad's Message",
 
       // call ChatScreen()
 
@@ -83,7 +86,12 @@ class ChatMessage extends StatelessWidget {
 }
 
 class ChatScreen extends StatelessWidget {
-  UserDao userDao = Get.put(UserDao());
+
+
+  // UserDao userDao = Get.put(UserDao());
+
+  UserDao userDao = Get.find();
+  MessageDao messageDao = Get.find();
 
   List _messages = <ChatMessage>[].obs;
 
@@ -100,21 +108,12 @@ class ChatScreen extends StatelessWidget {
         date: DateTime.now().toString(),
         // email: email,
       );
-      MessageDao.saveMessage(message);
+      messageDao.saveMessage(message);
 
       _textController.clear();
     }
   }
-  //
-  // void _handleSubmitted(String text) {
-  //   _textController.clear();
-  //
-  //   ChatMessage message = ChatMessage(text: text);
-  //
-  //   _messages.insert(0, message);
-  //
-  //   _focusNode.requestFocus();
-  // }
+
 
   Widget _buildTextComposer() {
     return Container(
@@ -166,45 +165,49 @@ class ChatScreen extends StatelessWidget {
       ),
       body: Obx( ()=>
          userDao.isLoggedin.value
-            ? Column(
-                children: [
-                  Flexible(
-                    child: StreamBuilder<QuerySnapshot>(
-                        stream: MessageDao.getMessageStream(),
-                        builder: (context, snapshot) {
-                          var _listOfSnapshot =
-                              snapshot.data?.docs ?? []; // WHAT WE DID HERE???
-
-                          // final message = Message.fromSnapshot(mySnapshot);
-
-                          _messages = _listOfSnapshot
-                              .map((data) => ChatMessage(snapshot: data))
-                              .toList();
-
-                          if (snapshot.hasData)
-                            return ListView.builder(
-                              itemBuilder: (_, int index) => _messages[index],
-                              itemCount: _messages.length,
-                              reverse: true,
-                              padding: EdgeInsets.all(8.0),
-                            );
-                          else
-                            return const Center(child: LinearProgressIndicator());
-                        }),
-                  ),
-                  Divider(
-                    height: 1.0,
-                  ),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).cardColor,
-                    ),
-                    child: _buildTextComposer(),
-                  )
-                ],
-              )
+            ? buildMessageList(context)
             : Login(),
       ),
     );
+  }
+
+  Widget buildMessageList(BuildContext context) {
+    return Column(
+              children: [
+                Flexible(
+                  child: StreamBuilder<QuerySnapshot>(
+                      stream: messageDao.getMessageStream(),
+                      builder: (context, snapshot) {
+                        var _listOfSnapshot =
+                            snapshot.data?.docs ?? []; // WHAT WE DID HERE???
+
+                        // final message = Message.fromSnapshot(mySnapshot);
+
+                        _messages = _listOfSnapshot
+                            .map((data) => ChatMessage(snapshot: data))
+                            .toList();
+
+                        if (snapshot.hasData)
+                          return ListView.builder(
+                            itemBuilder: (_, int index) => _messages[index],
+                            itemCount: _messages.length,
+                            reverse: true,
+                            padding: EdgeInsets.all(8.0),
+                          );
+                        else
+                          return const Center(child: LinearProgressIndicator());
+                      }),
+                ),
+                Divider(
+                  height: 1.0,
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).cardColor,
+                  ),
+                  child: _buildTextComposer(),
+                )
+              ],
+            );
   }
 }

@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:message_basic/login_screen.dart';
 
@@ -12,6 +11,14 @@ class UserDao extends GetxController{
  //  // add healper methods
  // Rx<User> _firebaseUser = Rx<User>();
  // String get user => _firebaseUser.value?.email;
+
+  Rxn<User> _firebaseUser = Rxn<User>();
+
+  @override
+  void onInit() {
+    _firebaseUser.bindStream(auth.authStateChanges());
+    super.onInit();
+  }
 
   final isLoggedin = false.obs;
 

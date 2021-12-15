@@ -1,19 +1,21 @@
 
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:get/get.dart';
 import 'package:message_basic/data/message.dart';
 
-class MessageDao{
-  static CollectionReference messageCollection = FirebaseFirestore.instance.collection('messages');
+class MessageDao extends GetxController{
 
-  static saveMessage(Message message){
-    messageCollection.add(message.toJson());
+  static Rx<CollectionReference> messageCollection = FirebaseFirestore.instance.collection('messages').obs;
+
+   saveMessage(Message message){
+    messageCollection.value.add(message.toJson());
   }
 
   // getMessage stream
 
-  static Stream<QuerySnapshot> getMessageStream(){
-    return messageCollection.snapshots();
+   Stream<QuerySnapshot> getMessageStream(){
+    return messageCollection.value.snapshots();
   }
 
 
