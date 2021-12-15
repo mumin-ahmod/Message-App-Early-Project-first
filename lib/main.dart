@@ -24,6 +24,7 @@ class FriendlyChatApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
+
       debugShowCheckedModeBanner: false,
       title: "Murads Message",
 
@@ -163,45 +164,47 @@ class ChatScreen extends StatelessWidget {
           }, icon: Icon(Icons.logout)),
         ],
       ),
-      body: userDao.isLoggedIn()
-          ? Column(
-              children: [
-                Flexible(
-                  child: StreamBuilder<QuerySnapshot>(
-                      stream: MessageDao.getMessageStream(),
-                      builder: (context, snapshot) {
-                        var _listOfSnapshot =
-                            snapshot.data?.docs ?? []; // WHAT WE DID HERE???
+      body: Obx( ()=>
+         userDao.isLoggedin.value
+            ? Column(
+                children: [
+                  Flexible(
+                    child: StreamBuilder<QuerySnapshot>(
+                        stream: MessageDao.getMessageStream(),
+                        builder: (context, snapshot) {
+                          var _listOfSnapshot =
+                              snapshot.data?.docs ?? []; // WHAT WE DID HERE???
 
-                        // final message = Message.fromSnapshot(mySnapshot);
+                          // final message = Message.fromSnapshot(mySnapshot);
 
-                        _messages = _listOfSnapshot
-                            .map((data) => ChatMessage(snapshot: data))
-                            .toList();
+                          _messages = _listOfSnapshot
+                              .map((data) => ChatMessage(snapshot: data))
+                              .toList();
 
-                        if (snapshot.hasData)
-                          return ListView.builder(
-                            itemBuilder: (_, int index) => _messages[index],
-                            itemCount: _messages.length,
-                            reverse: true,
-                            padding: EdgeInsets.all(8.0),
-                          );
-                        else
-                          return const Center(child: LinearProgressIndicator());
-                      }),
-                ),
-                Divider(
-                  height: 1.0,
-                ),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).cardColor,
+                          if (snapshot.hasData)
+                            return ListView.builder(
+                              itemBuilder: (_, int index) => _messages[index],
+                              itemCount: _messages.length,
+                              reverse: true,
+                              padding: EdgeInsets.all(8.0),
+                            );
+                          else
+                            return const Center(child: LinearProgressIndicator());
+                        }),
                   ),
-                  child: _buildTextComposer(),
-                )
-              ],
-            )
-          : Login(),
+                  Divider(
+                    height: 1.0,
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).cardColor,
+                    ),
+                    child: _buildTextComposer(),
+                  )
+                ],
+              )
+            : Login(),
+      ),
     );
   }
 }

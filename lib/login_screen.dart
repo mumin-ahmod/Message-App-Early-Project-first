@@ -13,54 +13,58 @@ class Login extends StatelessWidget {
     UserDao userDao = Get.put(UserDao());
     return Scaffold(
 
-      body: Center(
-        child: Column(
-          children: [
-            Text("Log-in to MMessage"),
+      body: SafeArea(
+        child: Center(
+          child: Column(
+            children: [
+              Text("Log-in to MMessage"),
 
-            TextFormField(
-              decoration: const InputDecoration(
-                border: UnderlineInputBorder(),
-                hintText: 'Email Address',
+              TextFormField(
+                decoration: const InputDecoration(
+                  border: UnderlineInputBorder(),
+                  hintText: 'Email Address',
+                ),
+                autofocus: false,
+
+                keyboardType: TextInputType.emailAddress,
+                // 3
+                textCapitalization: TextCapitalization.none,
+
+                controller: _emailController,
               ),
-              autofocus: false,
+              TextFormField(
+                decoration: const InputDecoration(
+                  border: UnderlineInputBorder(),
+                  hintText: 'Email Password',
+                ),
+                autofocus: false,
 
-              keyboardType: TextInputType.emailAddress,
-              // 3
-              textCapitalization: TextCapitalization.none,
+                keyboardType: TextInputType.emailAddress,
+                // 3
+                textCapitalization: TextCapitalization.none,
 
-              controller: _emailController,
-            ),
-            TextFormField(
-              decoration: const InputDecoration(
-                border: UnderlineInputBorder(),
-                hintText: 'Email Password',
+                controller: _passwordController,
               ),
-              autofocus: false,
+              Spacer(),
+              ElevatedButton(
+                  onPressed: () {
+                    userDao.login(
+                        _emailController.text, _passwordController.text);
+                  },
+                  child: Text("Login")),
 
-              keyboardType: TextInputType.emailAddress,
-              // 3
-              textCapitalization: TextCapitalization.none,
+              SizedBox(height: 20),
 
-              controller: _passwordController,
-            ),
-            Spacer(),
-            ElevatedButton(
-                onPressed: () {
-                  userDao.login(
-                      _emailController.text, _passwordController.text);
-                },
-                child: Text("Login")),
+              ElevatedButton(
+                  onPressed: () {
+                    userDao.signup(
+                        _emailController.text, _passwordController.text);
+                  },
+                  child: Text("Sign Up")),
 
-            SizedBox(height: 20),
-
-            ElevatedButton(
-                onPressed: () {
-                  userDao.signup(
-                      _emailController.text, _passwordController.text);
-                },
-                child: Text("Sign Up")),
-          ],
+              SizedBox(height: 80,),
+            ],
+          ),
         ),
       ),
     );

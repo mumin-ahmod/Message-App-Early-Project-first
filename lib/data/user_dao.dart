@@ -1,16 +1,25 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
+import 'package:message_basic/login_screen.dart';
 
 
 class UserDao extends GetxController{
- final auth = FirebaseAuth.instance;
 
-  // add healper methods
 
+  final auth = FirebaseAuth.instance;
+ //
+ //  // add healper methods
+ // Rx<User> _firebaseUser = Rx<User>();
+ // String get user => _firebaseUser.value?.email;
+
+  final isLoggedin = false.obs;
 
   bool isLoggedIn(){
-    return auth.currentUser != null;
+
+    isLoggedin.value = auth.currentUser != null;
+
+    return isLoggedin.value;
   }
 
   String? userId(){
@@ -50,6 +59,9 @@ class UserDao extends GetxController{
 
     try {
       await auth.signInWithEmailAndPassword(email: email, password: password);
+
+      isLoggedIn();
+
     } on FirebaseAuthException catch(e){
       if(e.code == "weak-password"){
         print("The password provided is too weak.");
@@ -67,6 +79,6 @@ class UserDao extends GetxController{
   // add logout
 
   void logout()async{
-    auth.signOut();
+    auth.signOut().then((value) => Get.offAll(Login()));
   }
 }
