@@ -14,12 +14,17 @@ class Login extends StatelessWidget {
     return Scaffold(
 
       body: SafeArea(
-        child: Center(
-          child: Column(
-            children: [
-              Text("Log-in to MMessage"),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text("Log-in to MMessage", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
 
-              TextFormField(
+            SizedBox(height: 30),
+
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextFormField(
                 decoration: const InputDecoration(
                   border: UnderlineInputBorder(),
                   hintText: 'Email Address',
@@ -32,7 +37,10 @@ class Login extends StatelessWidget {
 
                 controller: _emailController,
               ),
-              TextFormField(
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextFormField(
                 decoration: const InputDecoration(
                   border: UnderlineInputBorder(),
                   hintText: 'Enter Password',
@@ -45,26 +53,28 @@ class Login extends StatelessWidget {
 
                 controller: _passwordController,
               ),
-              Spacer(),
-              ElevatedButton(
-                  onPressed: () {
-                    userDao.login(
-                        _emailController.text, _passwordController.text);
-                  },
-                  child: Text("Login")),
+            ),
 
-              SizedBox(height: 20),
+            SizedBox(height: 30),
 
-              ElevatedButton(
-                  onPressed: () {
-                    userDao.signup(
-                        _emailController.text, _passwordController.text);
-                  },
-                  child: Text("Sign Up")),
+            ElevatedButton(
+                onPressed: () {
+                  userDao.login(
+                      _emailController.text, _passwordController.text);
+                },
+                child: Text("Login")),
 
-              SizedBox(height: 80,),
-            ],
-          ),
+            SizedBox(height: 20),
+
+            ElevatedButton(
+                onPressed: () {
+                  userDao.signup(
+                      _emailController.text, _passwordController.text);
+                },
+                child: Text("Sign Up")),
+
+            SizedBox(height: 80,),
+          ],
         ),
       ),
     );
