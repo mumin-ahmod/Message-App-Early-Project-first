@@ -27,7 +27,6 @@ class FriendlyChatApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-
       // initialBinding: InstanceBinding(),
 
       debugShowCheckedModeBanner: false,
@@ -88,14 +87,10 @@ class ChatMessage extends StatelessWidget {
 }
 
 class ChatScreen extends StatelessWidget {
-
-
   // UserDao userDao = Get.put(UserDao());
 
   UserDao userDao = Get.find();
   MessageDao messageDao = Get.find();
-
-  List _messages = <ChatMessage>[].obs;
 
   final _textController = TextEditingController();
 
@@ -115,7 +110,6 @@ class ChatScreen extends StatelessWidget {
       _textController.clear();
     }
   }
-
 
   Widget _buildTextComposer() {
     return Container(
@@ -158,58 +152,46 @@ class ChatScreen extends StatelessWidget {
         title: Text("Murad's Message"),
         centerTitle: true,
         backgroundColor: Colors.purple,
-
         actions: [
-          IconButton(onPressed: (){
-            userDao.logout();
-          }, icon: Icon(Icons.logout)),
+          IconButton(
+              onPressed: () {
+                userDao.logout();
+              },
+              icon: Icon(Icons.logout)),
         ],
       ),
-      body: Obx( ()=>
-         userDao.isLoggedin.value
-            ? buildMessageList(context)
-            : Login(),
+      body: Obx(
+        () => userDao.isLoggedin.value ? buildMessageList(context) : Login(),
       ),
     );
   }
 
   Widget buildMessageList(BuildContext context) {
-    return Column(
-              children: [
-                Flexible(
-                  child: StreamBuilder<QuerySnapshot>(
-                      stream: messageDao.getMessageStream(),
-                      builder: (context, snapshot) {
-                        var _listOfSnapshot =
-                            snapshot.data?.docs ?? []; // WHAT WE DID HERE???
-
-                        // final message = Message.fromSnapshot(mySnapshot);
-
-                        _messages = _listOfSnapshot
-                            .map((data) => ChatMessage(snapshot: data))
-                            .toList();
-
-                        if (snapshot.hasData)
-                          return ListView.builder(
-                            itemBuilder: (_, int index) => _messages[index],
-                            itemCount: _messages.length,
-                            reverse: true,
-                            padding: EdgeInsets.all(8.0),
-                          );
-                        else
-                          return const Center(child: LinearProgressIndicator());
-                      }),
-                ),
-                Divider(
-                  height: 1.0,
-                ),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).cardColor,
-                  ),
-                  child: _buildTextComposer(),
-                )
-              ],
-            );
+    return Obx( () =>
+     Column(
+        children: [
+          Flexible(
+              child: messageDao.messages.length > 0
+                  ? ListView.builder(
+                      itemBuilder: (_, int index) => messageDao.messages[index],
+                      itemCount: messageDao.messages.length,
+                      reverse: true,
+                      padding: EdgeInsets.all(8.0),
+                    )
+                  : Center(
+                      child: CircularProgressIndicator(),
+                    )),
+          Divider(
+            height: 1.0,
+          ),
+          Container(
+            decoration: BoxDecoration(
+              color: Theme.of(context).cardColor,
+            ),
+            child: _buildTextComposer(),
+          )
+        ],
+      ),
+    );
   }
 }

@@ -35,7 +35,7 @@ class Login extends StatelessWidget {
               TextFormField(
                 decoration: const InputDecoration(
                   border: UnderlineInputBorder(),
-                  hintText: 'Email Password',
+                  hintText: 'Enter Password',
                 ),
                 autofocus: false,
 
